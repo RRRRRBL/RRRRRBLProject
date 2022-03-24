@@ -1,0 +1,41 @@
+image:
+  file: .gitpod.Dockerfile
+
+tasks:
+  - before: |
+      sudo mount -t tmpfs shm -osize=4096m /dev/shm
+      exit
+
+  - init: |
+      flutter channel beta
+      flutter upgrade
+
+      flutter config --enable-web
+      yes | flutter doctor --android-licenses
+
+      flutter doctor
+      exit
+
+  - name: "build and run"
+    command: |
+      flutter devices
+
+      flutter pub get
+      flutter run -d web-server --web-port=8080 --web-hostname=0.0.0.0
+
+ports:
+  - port: 5900
+    onOpen: ignore
+
+  # no-vnc web client
+  - port: 6080
+    onOpen: ignore
+
+  # flutter web server
+  - port: 8080
+    onOpen: open-preview
+
+vscode:
+  extensions:
+    - dart-code.flutter
+    - dart-code.dart-code
